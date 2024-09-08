@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')%>
+<body>
+  <%- include('../partials/header.ejs')%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h3>Portail de Connexion Client</h3>
+    <section id="sectionForm">
+      <form method="post" action="/addClient">
+        <input type="text" name="name" placeholder="Votre Nom" value="Yann"/>
+        <input type="password" name="password" placeholder="Votre password" value="Yann"/>
+        <input type="email" name="email" placeholder="Votre email" value="yann@email.fr"/>
+        <input type="adresse" name="addresse" placeholder="Votre adresse" value="bidulemachinchose"/>
+        <input type="submit" value="Envoyer"/>
+      </form>
+    </section>
+   
+  </main>
+  <%- include('../partials/footer.ejs')%>
+</body>
+</html>

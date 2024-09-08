@@ -1,0 +1,451 @@
+:root{
+  --main-theme: #d7d5d5;
+  --secondary-theme: #dcdada;
+}
+body{
+  margin: 0;
+}
+main{
+
+  padding-top: 6em;
+  width: 90%;
+  margin: auto;
+  
+}
+/*---------------Header an Footer-------------------------------------*/
+header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  margin: auto;
+  top: 0px;
+  background-color: white;
+}
+
+footer{
+  background-color: var(--main-theme);
+  width: 100%;
+  height:5em;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+}
+/*---------------Burger Menu------------------------------------*/
+
+
+*,*::before,*::after{box-sizing: border-box}
+
+
+
+/*************ICONE HAMBURGER*******************/
+input[type="checkbox"] {
+
+position: absolute;
+left: -100vw;
+
+}	
+  
+.hamburger+label{
+cursor: pointer;
+width: 60px;
+height: 60px;
+display:flex;
+align-items:center;
+justify-content: center;
+z-index:1;
+background:#fff;
+border-radius: 9999px;
+box-shadow:0 0 5px rgba(0, 0, 0, 0.4);
+
+
+
+}
+  
+.hamburger+label span {
+
+background: var(--main-theme);
+width: 40px;
+height: 5px;
+position: relative;
+
+
+
+
+}
+  
+.hamburger+label span::before, 
+.hamburger+label span::after {
+
+position: absolute;
+background: var(--main-theme);
+width: inherit;
+height: inherit;
+content: "";
+}
+
+.hamburger+label span::before {
+top: -10px;
+}
+.hamburger+label span::after {
+top: 10px;
+}
+
+.hamburger:checked+label span {
+
+background: transparent;
+
+}
+
+.hamburger:checked+label span::after,
+.hamburger:checked+label span::before {
+
+top: 0;
+
+}
+
+.hamburger:checked+label span::before {
+
+transform: rotate(45deg);
+
+}
+
+.hamburger:checked+label span::after {
+
+transform: rotate(-45deg);
+
+}
+/*************ICONE HAMBURGER*******************/
+
+
+
+/*************MENU SLIDE*******************/
+nav {
+
+position: fixed;
+right: 0;
+top: 0;
+height: 100%;
+width: min(50%,300px);
+background: var(--main-theme);
+transform: translateX(100%);
+will-change: transform;
+
+}
+nav ul{
+list-style-type: none;
+padding-left:0;	
+margin-top: 6rem;
+
+}
+
+nav ul li{margin:1rem}	
+
+nav a {
+font-size:1.25rem;
+color:white;
+opacity: 0;
+visibility: hidden;
+
+}
+
+.hamburger:checked+label~ nav{ 
+
+transform: unset; /*on revient à l'état initial*/
+  
+}
+
+.hamburger:checked+label~ nav a {
+
+visibility: visible;
+opacity: 1;
+}
+
+/*************MENU SLIDE*******************/
+
+
+/*************Accessibilité*******************/
+.hamburger:focus-visible~label,
+nav a:focus-visible,
+nav a:focus {
+
+outline: 2px solid var(--main-theme);
+outline-offset: 4px;
+}
+
+.hamburger:not(:focus-visible)~label,nav a:not(:focus):focus-visible{
+
+  outline: none;
+}	
+
+.hamburger:not(:focus-visible):focus~label{
+
+box-shadow: 0 0 0 4px var(--main-theme)
+
+}
+
+@media (prefers-reduced-motion: no-preference) {
+.hamburger+label span {transition: background 10ms 300ms;}
+.hamburger+label span::before, 
+.hamburger+label span::after{transition: top 300ms 350ms, transform 300ms 50ms;}
+.hamburger:checked+label span::after,
+.hamburger:checked+label span::before {transition: top 300ms 50ms, transform 300ms 350ms;}	
+
+.hamburger:focus-visible~label,nav a:focus-visible,
+nav a:focus  {transition: outline-offset .25s ease;}
+
+nav{transition: transform 0.5s;}
+nav a{transition: visibility 500ms,opacity 500ms 300ms;}
+
+
+}
+
+
+
+
+
+/*----------------------------Menu Client ------------------------*/
+
+#menuClient{
+  background-color: var(--main-theme);
+  width: 100%;
+  height:5em;
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0px;
+ 
+}
+#menuClient a{
+  height: 3rem;
+  width: 3rem;
+  text-align: center;
+  transition-duration: 0.4s;
+
+}
+.imgMenuClient {
+  background-color: var(--main-theme);
+  /* /* color: black; */
+  height: 3.5rem;
+  width: 3.5rem;
+  padding: 0.45rem; 
+  /* border: 2px solid var(--main-theme);  */
+  border-radius: 50%;
+  
+  
+  
+}
+#menuClient a:hover  {
+  -ms-transform: scale(1.5) ; /* IE 9 */
+  -webkit-transform: scale(1.5) ; /* Safari 3-8 */
+  transform: scale(1.25) translate(0, -0.5rem);
+  color: white;
+  /* padding: 0.45rem;  */
+  border-radius: 50%;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  
+}
+
+/*----------------------------Sections Informations ------------------------*/
+
+#sectionComptesClient, #sectionOperationsClient, #sectionListeClients, #sectionGraph, #sectionMarche{
+  width: 70%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-radius: 1rem;
+  margin-top: 1rem;
+}
+
+
+.divInfos{
+  background-color: var(--secondary-theme);
+  border: solid black 1px;
+  border-radius: 1rem;
+}
+
+
+#tableOperations, #tableMarche .tablesAdmin {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+  overflow: scroll;
+}
+
+#tableMarche th, #tableMarche td, #tableOperations td, #tableOperations th, .tablesAdmin td, .tablesAdmin th{
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#tableMarche tr:nth-child(even), #tableOperations tr:nth-child(even), .tablesAdmin tr:nth-child(even){background-color: #f2f2f2;}
+
+#tableMarche tr:hover, #tableOperations tr:hover, .tablesAdmin tr:hover {background-color: #ddd;}
+
+#tableMarche th, #tableOperations th, .tablesAdmin th {
+padding-top: 12px;
+padding-bottom: 12px;
+text-align: left;
+background-color: var(--main-theme);
+color: white;
+}
+
+/*----------------------------------Home page---------------------------------------*/
+
+.bttn{
+  text-decoration: none;
+  color: black;
+  border: solid var(--main-theme) 0.25rem;
+  border-radius: 1rem;
+  padding: 0.25rem;
+}
+.bttn:hover{
+  color: white;
+  background-color: var(--main-theme);
+}
+
+main h1, main h3{
+  text-align: center;
+}
+
+/* ------------------------------------------Form style---------------------------------------------------- */
+  #sectionForm{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+form{
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  width: 20%;
+  border: solid var(--main-theme) 1px;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+  form > * {
+      margin-top: 0.5rem;
+  }
+
+  #bttnAdminForm{
+      margin-top: 1rem;
+      background-color: var(--secondary-theme);
+      border: solid var(--secondary-theme) 1px;
+      border-radius: 1rem;
+      color: black
+  }
+  #bttnAdminForm:hover{
+      background-color: var(--main-theme);
+      border: solid var(--main-theme) 1px;
+      border-radius: 1rem;
+      color:white;
+      box-shadow:0 0 5px var(--main-theme);
+  }
+
+/***************************************SIDE BAR*****************************************************/
+aside {
+color: #fff;
+width: 10%;
+padding-left: 20px;
+height: 100vh;
+background-image: linear-gradient(30deg ,var(--main-theme), var(--secondary-theme));
+border-top-right-radius: 80px;
+position:fixed;
+top: 5rem;
+left: -7rem;
+transition: all .5s ease
+}
+aside:hover{
+transform:translateX(7rem) ;
+}
+
+aside a {
+font-size: 12px;
+color: #fff;
+display: block;
+padding: 12px;
+padding-left: 30px;
+text-decoration: none;
+-webkit-tap-highlight-color:transparent;
+}
+
+aside a:hover {
+color: black;
+background: #fff;
+outline: none;
+position: relative;
+background-color: #fff;
+border-top-left-radius: 20px;
+border-bottom-left-radius: 20px;
+}
+
+aside a i {
+margin-right: 5px;
+}
+
+aside a:hover::after {
+content: "";
+position: absolute;
+background-color: transparent;
+bottom: 100%;
+right: 0;
+height: 35px;
+width: 35px;
+border-bottom-right-radius: 18px;
+box-shadow: 0 20px 0 0 #fff;
+}
+
+aside a:hover::before {
+content: "";
+position: absolute;
+background-color: transparent;
+top: 38px;
+right: 0;
+height: 35px;
+width: 35px;
+border-top-right-radius: 18px;
+box-shadow: 0 -20px 0 0 #fff;
+}
+
+aside p {
+margin: 0;
+padding: 40px 0;
+}
+
+
+
+waviy {
+  position: relative;
+  }
+  .waviy span {
+  position: relative;
+  display: inline-block;
+  font-size: 40px;
+  color:black;
+  text-transform: uppercase;
+  animation: flip 3s infinite;
+  animation-delay: calc(.3s * var(--i))
+  }
+  @keyframes flip {
+  0%,80% {
+    transform: rotateY(360deg) 
+  }
+  }
+  
+
+  .divhome {
+    border-radius: 30px;
+    background-color:#ebe8e8;
+    height: 400px;
+    width: 400px;
+    text-align: center;
+    display: table;
+    margin: 0 auto;
+    font-size:larger;
+    
+    
+    
+    
+    }

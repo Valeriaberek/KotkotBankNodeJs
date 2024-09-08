@@ -1,0 +1,10 @@
+<h3>Formualire de modification de formulaire</h3>
+<form method="post" >
+    <input type="text" name="name" placeholder="Votre Nom"/>
+    <input type="submit" formaction="/formModifyUser" value="Modifier"/>
+    <input type="submit" formaction="/deleteUser" value="Supprimer" style="color: red"/>
+</form>
+
+<% if(typeof message !== 'undefined'){%>
+    <p><%=message%></p>
+<% } %>

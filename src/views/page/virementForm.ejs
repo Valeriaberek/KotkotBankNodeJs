@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')%>
+<body>
+  <%- include('../partials/header.ejs')%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h3>Option d'Opérations</h3>
+    <section id="sectionForm">
+      <form method="post" action="/addOperation">
+        <select id="selectClientCompte" name="compteEmetteur">
+          <option value="">Choisir un compte</option>
+          <% listComptes.forEach(compte =>{%>
+            <option value=<%= compte._id.toString()%>>Compte n° :<%= compte._id.toString()%> de type <%= compte.type%> </option>
+          <% }) %>
+        </select>
+        <select id="selectOperationType" name="typeOperation">
+            <!-- depend on type account -->
+        </select>
+        <input type="number" name="montant" id="inputMontant" placeholder="Selectionner un montant"/>
+        <input type="text" name="motif" placeholder="Motif"/>
+        <input type="text" name="cible" placeholder="Indiquez self sur ce même compte"/>
+        <input type ="number" name='soldeAvant' id="soldeCurrentAccount" readonly/>
+        <input type = "number" name='soldeApres' id ="soldeAfter" readonly/>
+        <input type="submit" value="Envoyer" id="submitAddOperation"/>
+
+        <input type="text" name="dateOperation" id="inputDateOperation" hidden/>
+        <input type="text" name="numeroClient" id="inputNumeroClient" hidden/>
+        
+      </form>
+      <div id="divMessage"></div>
+    </section>
+
+    
+   
+  </main>
+  <%- include('../partials/menuClient.ejs') %>
+</body>
+</html>
+
+<script>
+  
+  let listComptes = JSON.parse(('<%- JSON.stringify(listComptes)%>'));
+  let selectOperationType = document.getElementById('selectOperationType');
+  console.log(listComptes)
+
+  selectClientCompte.addEventListener('change', async ()=> {
+    // reset all element fo each time the value of the select input change
+    divMessage.innerText = '';
+    submitAddOperation.disabled = false;
+    inputDateOperation.value = '';
+    inputNumeroClient.value ='';
+    
+    // remove all option form select
+    for (var i=0; i<selectOperationType.length; i++) { 
+        selectOperationType.remove(i);
+    }
+
+    // browse the selected count
+    let currentCompte = '';
+    
+    await listComptes.forEach((compte) => { 
+      console.log(compte)
+      if(selectClientCompte.value === compte._id.toString()){
+        currentCompte = compte;
+      }
+    });  
+
+    // complete hidden input for the submit
+    soldeCurrentAccount.value = currentCompte.solde;
+    inputNumeroClient.value = currentCompte.numeroClient;
+    let date = new Date();
+    inputDateOperation.value = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+   
+
+    if(currentCompte.type === 'epargne'){
+      let option1 = document.createElement('option')
+      option1.value = 'achat';
+      option1.text = 'achat'
+      let option2 = document.createElement('option')
+      option2.value = 'vente';
+      option2.text = 'vente';
+
+      selectOperationType.add(option1);
+      selectOperationType.add(option2);
+      
+
+    }else {
+      console.log("bouh")
+      let option1 = document.createElement('option')
+      option1.value = 'depot';
+      option1.text = 'depot';
+      let option2 = document.createElement('option')
+      option2.value = 'retrait';
+      option2.text = 'retrait';
+
+      let option3 = document.createElement('option')
+      option3.value = 'virement';
+      option3.text = 'virement';
+
+      selectOperationType.add(option1);
+      selectOperationType.add(option2);
+      selectOperationType.add(option3);
+    }
+  })
+
+    //amount managment
+  inputMontant.addEventListener('input', async ()=>{
+    divMessage.innerText = '';
+    submitAddOperation.disabled = false;
+    let currentCompte = '';
+
+    await listComptes.forEach((compte) => { // browse the selected count
+      // console.log(compte)
+      if(selectClientCompte.value === compte._id.toString()){
+        currentCompte = compte;
+      }
+    });
+    
+    switch(selectOperationType.value){
+      
+      case 'virement':
+        if(autorizedOperation(currentCompte.decouvertAut, inputMontant.value, soldeCurrentAccount.value )){
+          soldeAfter.value = soldeCurrentAccount.value - inputMontant.value;
+        }
+        break;
+      case 'depot':
+        soldeAfter.value = parseInt(soldeCurrentAccount.value)  + parseInt(inputMontant.value);
+        break;
+      case 'retrait':
+        if(autorizedOperation(currentCompte.decouvertAut, inputMontant.value, soldeCurrentAccount.value )){
+            soldeAfter.value = soldeCurrentAccount.value - inputMontant.value;
+          }
+        break;
+      case 'achat':
+        if(autorizedOperation(currentCompte.decouvertAut, inputMontant.value, soldeCurrentAccount.value )){
+            soldeAfter.value = soldeCurrentAccount.value - inputMontant.value;
+          }
+        break;
+      case 'vente':
+        soldeAfter.value = parseInt(soldeCurrentAccount.value) + parseInt(inputMontant.value);
+        break;
+      default: 
+        divMessage.innerText = 'Une erreur est survenue. Veuillez reessayer';
+        break;
+    }
+  })
+
+function autorizedOperation(decouvertAutorise, montant, ancienSolde){
+  let newSolde = ancienSolde - montant;
+  if(newSolde > 0){
+    return true;
+  }else {
+    if (Math.abs(newSolde) > decouvertAutorise){
+      divMessage.innerText = 'Découvert trop important. Vérifiez vos conditions';
+      submitAddOperation.disabled = true;
+      return false
+    } else {
+      return true;
+    }
+  }
+
+}
+</script>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')-%>
+<body>
+  <%- include('../partials/header.ejs')-%>
+  <%- include('../partials/sidebar.ejs')-%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h2> Bonjour  <%= infosAdmin.name %></h2>
+    <p> Votre dernière connexion date du: <%= infosAdmin.derniereConnexion%></p>
+
+    <p> vous avez : <%= listClients.length%> clients</p>
+    <% if(typeof message !== 'undefined'){%>
+      <p ><%=message%></p>
+  <% } %>
+    
+
+    <h4> liste des Clients : </h4>
+    <table class="tablesAdmin">
+        <tr>
+            <% for(const prop in listClients[0]){ %>
+                <th> <%= prop %> </th>
+            <% } %>
+        </tr>
+            <% listClients.forEach(client =>{ %>
+                <tr>
+                <% for(const prop in client){ %>
+                    <td> <%= client[prop] %> </td>
+                <% } %>
+                <td><button class="modifyBttn" id="bttnModify-<%= client._id %>" > Modifier</button></td>
+                <td><button class="deleteBttn" id="bttnDelete-<%= client._id%>" >Supprimer</button></td>
+                </tr>
+            <%}) %> 
+    </table>
+    <section id="sectionActionsAdminForm"></section>
+  
+    <h4> liste des nouvelles demandes : </h4>
+    
+
+ 
+  </main>
+  
+<script>
+
+    let listClients = JSON.parse(('<%- JSON.stringify(listClients)%>')); //decrypt list of Operations
+
+
+    let modifyBttns = document.getElementsByClassName('modifyBttn')
+    let deleteBttns = document.getElementsByClassName('deleteBttn')
+    
+    for(const modifyBttn of modifyBttns){
+        modifyBttn.addEventListener('click', ()=>{
+            sectionActionsAdminForm.innerHTML = ''; // empty section when buttn is click
+            let str = modifyBttn.id.split("-")
+            let currentClient = '';
+            listClients.forEach(client => {
+                if(client._id === str[1]){
+                    currentClient = client
+                    
+                }
+            })
+
+            let form = document.createElement('form'); // create the new form
+            form.method = "post";
+            form.action = "/modifyClient";
+            for(const prop in currentClient){
+                let input = document.createElement('input');
+                if(prop === '_id'){ // hidden the _id input 
+                    input.type= 'hidden';
+                } else{
+                    input.type = 'text';
+                }
+                
+                input.name = prop;
+                input.value = currentClient[prop];
+                form.appendChild(input)
+            }
+            let bttnForm = document.createElement('input')
+            bttnForm.type = "submit";
+            bttnForm.value = "Modifier";
+            form.appendChild(bttnForm)
+            sectionActionsAdminForm.appendChild(form)
+        })
+    };
+
+    for(const deleteBttn of deleteBttns){
+        deleteBttn.addEventListener('click', ()=>{
+            sectionActionsAdminForm.innerHTML = ''; // empty section when buttn is click
+            let str = deleteBttn.id.split("-"); // retrieve the client by the functions
+            let form = document.createElement('form'); // create the new form
+            form.method = "post";
+            
+            let text = document.createElement('p')
+            text.innerText = " Etes vous sur de vouloir supprimer "+str[1];
+            form.appendChild(text);
+
+            let inputId = document.createElement('input')
+            inputId.type ="hidden"
+            inputId.name = '_id';
+            inputId.value = str[1];
+
+            let inputYes = document.createElement('input')
+            inputYes.type ="submit"
+            inputYes.formAction = "/deleteClient"
+            inputYes.value = "Oui";
+            inputYes.style.backgroundColor="red"
+
+            let buttonNo = document.createElement('button')
+            buttonNo.innerText= "No";
+            buttonNo.style.backgroundColor="green"
+
+
+            form.appendChild(inputId);
+            form.appendChild(inputYes);
+            form.appendChild(buttonNo);
+            sectionActionsAdminForm.appendChild(form)
+
+            buttonNo.addEventListener('click', (e)=>{
+                e.preventDefault();
+                sectionActionsAdminForm.innerHTML = '';
+
+            })
+        })
+    };
+
+    
+
+//   async function retrieveClient(id){
+//         let clientId = await splitId(id) 
+//         let c ='';
+//         listClients.forEach(client => {
+//             if(client._id === clientId){
+//                let c = client
+                
+//             }
+//         })
+//         return c;
+//   }
+//   async function splitId(id){
+//         let str = id.split("-")
+//         return str[1];
+//     }
+     
+</script>
+  
+<%- include('../partials/footer.ejs') %>
+</body>
+</html>

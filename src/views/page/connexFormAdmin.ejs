@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')%>
+<body>
+  <%- include('../partials/header.ejs')%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h3>Portail de Connexion <strong>Administrateur</strong></h3>
+    <section id="sectionForm">
+      <form method="post" >
+          <input type="email" name="email" placeholder="Votre email" value="hussonbanque@gmail.com" required/>
+          <input type="password" name="password" placeholder="Votre password" value ="4321" required/>
+          <input type="submit" formaction="/connexAdmin" value="Connexion"/>     
+      </form>
+      <% if(typeof message !== 'undefined'){%>
+        <p><%=message%></p>
+      <% } %>
+      
+    </section>
+
+    
+    </main>
+  </main>
+  <%- include('../partials/footer.ejs')%>
+</body>
+</html>

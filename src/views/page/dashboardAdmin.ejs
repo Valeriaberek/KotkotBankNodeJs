@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')-%>
+<body>
+  <%- include('../partials/header.ejs')-%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+
+  <!--------------------------------- SIDE BAR ------------------------------------------------>
+  <%- include('../partials/sidebar.ejs')-%>
+   <!--------------------------------- End OF SIDEBAR ------------------------------------------------>
+  <main>
+    <h2> Bonjour  <%= infosAdmin.name %></h2>
+    <p> Votre dernière connexion date du: <%= infosAdmin.derniereConnexion%></p>
+    
+
+    <% if(typeof message !== 'undefined'){%>
+      <p ><%=message%></p>
+    <% } %>
+ 
+    <h3>Listes Clients : </h3>
+    <section id="sectionListeClients">
+      
+      <% for(i=0; i < listClients.length; i++){ %>
+        <div  class="divInfos">
+          <% for(const prop in listClients[i]) {%>
+            <div style="margin: auto 1rem 0 1rem; display: flex;">
+              <h4> <%=prop %>: </h4> <p style="margin: auto 1rem 0 1rem"><%= listClients[i][prop].toString()%></p>
+            </div>
+        
+          <% } %>
+        </div>
+      <% } %>
+  </section>
+
+  <h3>Informations des opérations </h3>
+    <section id="sectionComptesClient">
+      
+        <% for(i=0; i < listComptes.length; i++){ %>
+          <div  class="divInfos">
+            <% for(const prop in listComptes[i]) {%>
+              <div style="margin: auto 1rem 0 1rem; display: flex;">
+                <h4> <%=prop %>: </h4> <p style="margin: auto 1rem 0 1rem"><%= listComptes[i][prop].toString()%></p>
+              </div>
+          
+            <% } %>
+          </div>
+        <% } %>
+    </section>
+
+    <h3>Informations des opérations </h3>
+    
+    <section id="sectionSelectCompte">
+      <p>Veuillez sélectionner un compte: </p>
+      <select id="selectCompte" name="selectCompte">
+        <option value="">Choisir un compte</option>
+        <% listComptes.forEach(compte =>{%>
+          <option value=<%= compte._id.toString()%>>Compte n° :<%= compte._id.toString()%> de type <%= compte.type%> </option>
+          <% }) %>
+
+      </select>
+    </section>
+    <section id="sectionOperationsClient">
+      <table id="tableOperations"> </table>
+    </section>
+    <sectioni id="sectionGraph">
+      
+        <div id="graph" style="width: 800px;"><canvas id="acquisitions"></canvas></div>
+
+    </section>
+  
+    <!-- <script type="module" src="dimensions.js"></script> -->
+  </main>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.js"></script>
+  
+  <script> 
+      let list = JSON.parse(('<%- JSON.stringify(listOperations)%>')); //decrypt list of Operations
+      
+     
+      // identify element we needed
+      let selectCompte = document.getElementById('selectCompte');
+      let tableOperation = document.getElementById('tableOperations');
+      let divCanvas = document.getElementById('graph');
+
+    // managment of select option
+      selectCompte.addEventListener('change', ()=>{ // le add event listener rajoute un élément numéroCompte dans la liste et je sais pas pourquoi
+        tableOperation.innerHTML = ''; // empty the table
+        divCanvas.innerHTML = ''; // empty the divCanvas
+        console.log(list)
+        currentList= [];
+        for(i=0; i< list.length; i++){ // create list that contain operation's of selected account
+        
+          if(list[i].compteEmetteur === selectCompte.value){
+              currentList.push(list[i]);
+          }
+        }
+        
+        let rowth = document.createElement('tr');
+        for(const prop in list[0]) { // create the header of the table
+          let th = document.createElement('th');
+          th.innerText = prop
+          rowth.appendChild(th);
+        }
+
+        tableOperation.appendChild(rowth)
+        
+        for(i=0; i < currentList.length; i++){ /// create datas of the tabale with de current List (opreation's of selected count)
+              let row = document.createElement('tr')
+                if(currentList[i].numeroCompte = selectCompte.value)
+                  for(const prop in currentList[i]){
+                console.log(prop, currentList[i][prop])
+                      let cell = document.createElement('td')
+                      cell.innerText = currentList[i][prop].toString();
+                      row.appendChild(cell)
+                  }
+              tableOperation.appendChild(row)
+        } 
+
+
+         // create canvas balise for the graphics
+         let acquisitions = document.createElement('canvas');
+        acquisitions.id = 'acquisitions',
+        divCanvas.appendChild(acquisitions);
+
+        // create graphic with CHARTJS  
+        (async function() {
+            new Chart(
+              document.getElementById(`acquisitions`),
+              {
+                type: 'line',
+                data: {
+                  labels: currentList.map(operation => operation.dateOperation),
+                  datasets: [
+                    {
+                        label: 'Solde at the Operation',
+                        data: currentList.map(operation => operation.soldeApres),
+                    }
+                  ]
+                },
+                options: {
+                        scales: {
+                              y: {
+                                type: 'linear',
+                                grace: '100%'
+                              }
+                        }
+                  },
+              }
+            );
+            })();
+            
+          
+        }) 
+        
+        
+
+            
+</script>
+<%- include('../partials/footer.ejs') %>
+</body>
+</html>

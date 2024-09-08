@@ -1,0 +1,11 @@
+<h3>Formualire d'ajout utilisateur</h3>
+<form method="post" action="/addUser">
+    <input type="text" name="name" placeholder="Votre Nom"/>
+    <input type="text" name="type" placeholder="Votre statut"/>
+    <input type="number" name="age" placeholder="Votre age"/>
+    <input type="submit" value="Envoyer"/>
+</form>
+
+<% if(typeof message !== 'undefined'){%>
+    <p><%=message%></p>
+<% } %>

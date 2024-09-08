@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')%>
+<body>
+  <%- include('../partials/header.ejs')%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h1> Bienvenue sur <strong>KOKOTBANK.</strong> </h1>
+    <h3> La banque qui conserve vos coincoins</h3>
+    <div class="divhome"></br>
+    <p>Déjà client ?</br> </br><a class="bttn" href="/connexForm">Accéder à mon espace </a></p>
+    <p>Vous souhaitez ouvrir un compte </br>chez nous ?</br></br> <a class="bttn" href="/registerForm">Inscription </a> </p>
+  </br>
+</br>
+    <a class="bttn" id="apiBttn" href="">Test API </a> 
+    <div id="testDiv"></div></div>
+
+    <% if(typeof message !== 'undefined'){%>
+      <p style="color:green"><%=message%></p>
+    <% } %>
+  </main>
+  <%- include('../partials/footer.ejs')%>
+</body>
+<script>
+  apiBttn.addEventListener('click', (e)=>{
+    e.preventDefault()
+    fetch("http://localhost:3333/api/test")
+    .then(response => response.text())
+    .then( response => {
+    console.log(response)
+    testDiv.innerText = response })
+    .catch(err => console.log(err))
+  })
+  
+</script>
+
+</html>

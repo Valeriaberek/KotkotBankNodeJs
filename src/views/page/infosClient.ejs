@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')%>
+<body>
+  <%- include('../partials/header.ejs')%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h1> Bienvenue sur kokot bank </h1>
+   
+    
+   <h4> Bonjour, <%= infosClient.name %></h4>
+
+   <h5>Voici les informations vous concernant : </h5>
+<div class="modifdiv">
+    <% for( const info in infosClient) {%>
+        <p> <%= info  %> : <%= infosClient[info] %></p>
+    <% }%>
+    <% if(typeof message !== 'undefined'){%>
+      <p style="color:green"><%=message%></p>
+    <% } %>
+      <section id="sectionModifyCLient" hidden>
+        <form method="post" action="/modifyInfosByClient">
+          <input type="text" name="_id" value="<%= infosClient._id%>" hidden/>
+          <input type="text" name="name" value="<%= infosClient.name%>"/>
+          <input type="email" name="email" value="<%= infosClient.email%>"/>
+          <input type="text" name="adresse" value="<%= infosClient.adresse%>"/>
+          <input type="submit" value="Modifier"/>
+      </form>
+      </section></br>
+    <a class="bttn" id="modifyBttn">Modifier vos informations </a>
+  </main></div>
+  <%- include('../partials/menuClient.ejs')%>
+</body>
+<script>
+  modifyBttn.addEventListener('click', ()=>{
+    sectionModifyCLient.style.display = 'flex';
+  })
+
+</script>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')-%>
+<body>
+  <%- include('../partials/header.ejs')-%>
+  <%- include('../partials/sidebar.ejs')-%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h2> Bonjour,  <%= infosAdmin.name %></h2>
+    <p> Votre dernière connexion date du: <%= infosAdmin.derniereConnexion%></p>
+
+    <p> vous avez : <%= listComptes.length%> comptes en gestion</p>
+    <% if(typeof message !== 'undefined'){%>
+      <p ><%=message%></p>
+    <% } %>
+    
+    <h4> liste des Comptes : </h4>
+    <table class="tablesAdmin">
+        <tr>
+            <% for(const prop in listComptes[0]){ %>
+                <th> <%= prop %> </th>
+            <% } %>
+        </tr>
+            <% listComptes.forEach(compte =>{ %>
+                <tr>
+                <% for(const prop in compte){ %>
+                    <td> <%= compte[prop] %> </td>
+                <% } %>
+                <td><button class="modifyBttn" id="bttnModify-<%= compte._id %>" > Modifier</button></td>
+                <td><button class="deleteBttn" id="bttnDelete-<%= compte._id%>" >Supprimer</button></td>
+                </tr>
+            <%}) %> 
+    </table>
+    <section id="sectionActionsAdminForm"></section>
+    <section id="createCompte">
+      <p>Créer un nouveau Compte </p>
+      <select id="selectClient" name="selectClient">
+        <option value="">Choisir un client</option>
+        <% listClients.forEach(client =>{%>
+          <option value=<%= client._id%>><%= client.name%> </option>
+          <% }) %>
+
+      </select>
+    </section>
+  </main>
+  <script>
+
+      let listComptes = JSON.parse(('<%- JSON.stringify(listComptes)%>')); //decrypt list of Operations
+      let listClients = JSON.parse(('<%- JSON.stringify(listClients)%>'));
+  
+      let modifyBttns = document.getElementsByClassName('modifyBttn')
+      let deleteBttns = document.getElementsByClassName('deleteBttn')
+      
+      //----------------DOM buttons modify managment---------------
+      for(const modifyBttn of modifyBttns){
+          modifyBttn.addEventListener('click', ()=>{
+   
+              sectionActionsAdminForm.innerHTML = ''; // empty section when buttn is click
+              let str = modifyBttn.id.split("-")
+              console.log(str[1])
+              let currentCompte = '';
+              listComptes.forEach(compte => {
+                  if(compte._id === str[1]){
+                      currentCompte = compte
+                      
+                  }
+              })
+  
+              let form = document.createElement('form'); // create the new form
+              form.method = "post";
+              form.action = "/modifyCompte";
+              for(const prop in currentCompte){
+                  let input = document.createElement('input');
+                  if(prop === '_id'){ // hidden the _id input 
+                      input.type= 'hidden';
+                  } else{
+                      input.type = 'text';
+                  }
+                  
+                  input.name = prop;
+                  input.value = currentCompte[prop];
+                  form.appendChild(input)
+              }
+              let bttnForm = document.createElement('input')
+              bttnForm.type = "submit";
+              bttnForm.value = "Modifier";
+              form.appendChild(bttnForm)
+              sectionActionsAdminForm.appendChild(form)
+          })
+      };
+      //----------------DOM buttons delete managment---------------
+      for(const deleteBttn of deleteBttns){
+          deleteBttn.addEventListener('click', ()=>{
+         
+              sectionActionsAdminForm.innerHTML = ''; // empty section when buttn is click
+              let str = deleteBttn.id.split("-"); // retrieve the client by the functions
+              let form = document.createElement('form'); // create the new form
+              form.method = "post";
+              
+              let text = document.createElement('p')
+              text.innerText = " Etes vous sur de vouloir supprimer "+str[1];
+              form.appendChild(text);
+  
+              let inputId = document.createElement('input')
+              inputId.type ="hidden"
+              inputId.name = '_id';
+              inputId.value = str[1];
+  
+              let inputYes = document.createElement('input')
+              inputYes.type ="submit"
+              inputYes.formAction = "/deleteCompte"
+              inputYes.value = "Oui";
+              inputYes.style.backgroundColor="red"
+  
+              let buttonNo = document.createElement('button')
+              buttonNo.innerText= "No";
+              buttonNo.style.backgroundColor="green"
+  
+  
+              form.appendChild(inputId);
+              form.appendChild(inputYes);
+              form.appendChild(buttonNo);
+              sectionActionsAdminForm.appendChild(form)
+  
+              buttonNo.addEventListener('click', (e)=>{
+                  e.preventDefault();
+                  sectionActionsAdminForm.innerHTML = '';
+  
+              })
+          })
+      };
+
+      //-----------------New Compte DOM Managment ------------------------
+      selectClient.addEventListener('change', ()=>{
+              console.log("bouh")
+              sectionActionsAdminForm.innerHTML = ''; // empty section when buttn is click
+              let currentClient= '';
+              listClients.forEach(client => {
+                  if(client._id === selectClient.value){
+                      currentClient = client
+                      
+                  }
+              })
+  
+              let form = document.createElement('form'); // create the new form
+              form.method = "post";
+              form.action = "/createCompte";
+              for(const prop in listComptes[0]){
+                  if(prop === '_id'){ // hidden the _id input
+                      let input = document.createElement('input');
+                      input.type= 'hidden';
+                      input.name = prop;
+                      input.value =  selectClient.value;
+                      form.appendChild(input)
+                  } else if(prop === 'type'){
+                      let select = document.createElement('select');
+                      let option1 = document.createElement('option');
+                      option1.value = "epargne";
+                      option1.text = "epargne";
+                      let option2 = document.createElement('option');
+                      option2.value = "courant";
+                      option2.text = "courant";
+                      select.add(option1)
+                      select.add(option2)
+                      form.appendChild(select)
+                  }else {
+                      let input = document.createElement('input');
+                      input.type = 'text';
+                      input.placeholder = "Entre votre  " + prop;
+                      input.name = prop;
+                      form.appendChild(input)
+                  }
+                  
+                 
+              }
+              let bttnForm = document.createElement('input')
+              bttnForm.type = "submit";
+              bttnForm.value = "Ajouter";
+              form.appendChild(bttnForm)
+              sectionActionsAdminForm.appendChild(form)
+        })
+        
+  </script>  
+<%- include('../partials/footer.ejs') %>
+</body>
+</html>

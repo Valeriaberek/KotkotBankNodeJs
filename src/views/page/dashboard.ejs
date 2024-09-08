@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('../partials/head.ejs')-%>
+<body>
+  <%- include('../partials/header.ejs')-%>
+  <!-- <div style="width: 500px;"><canvas id="dimensions"></canvas></div><br/> -->
+  <main>
+    <h2> Bonjour  <%= infosClient.name %></h2>
+    <p> Votre dernière connexion date du: <%= infosClient.derniereConnexion%></p>
+    <% if(typeof message !== 'undefined'){%>
+      <p ><%=message%></p>
+  <% } %>
+    
+ 
+    <h3>Informations comptes : </h3>
+    <section id="sectionComptesClient">
+      
+        <% for(i=0; i < listComptes.length; i++){ %>
+          <div  class="divInfos">
+            <% for(const prop in listComptes[i]) {%>
+              <div style="margin: auto 1rem 0 1rem; display: flex;">
+                <h4> <%=prop %>: </h4> <p style="margin: auto 1rem 0 1rem"><%= listComptes[i][prop].toString()%></p>
+              </div>
+          
+            <% } %>
+          </div>
+        <% } %>
+    </section>
+    <section id="sectionMarche">
+      <table id="tableMarche">
+      </table>
+      <div id="oneTitle" class="divInfos"></div>
+    </section>
+    
+
+    <h3>Informations des opérations </h3>
+    
+    <section id="sectionSelectCompte">
+      <p>Veuillez sélectionner un compte: </p>
+      <select id="selectCompte" name="selectCompte">
+        <option value="">Choisir un compte</option>
+        <% listComptes.forEach(compte =>{%>
+          <option value=<%= compte._id.toString()%>>Compte n° :<%= compte._id.toString()%> de type <%= compte.type%> </option>
+          <% }) %>
+
+      </select>
+    </section>
+    <section id="sectionOperationsClient">
+      <table id="tableOperations">
+      </table>
+    </section>
+    
+    <sectioni id="sectionGraph">
+      
+        <div id="graph" style="width: 800px;"><canvas id="acquisitions"></canvas></div>
+
+    </section>
+  
+    <!-- <script type="module" src="dimensions.js"></script> -->
+  </main>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.0/dist/chart.umd.js"></script>
+  
+  <script> 
+    /********************************informations market place****************************************/
+    /*----Refresh api's data all 10s ---*/
+    fetchDatasMarche();
+
+    setInterval( fetchDatasMarche
+      ,10000);
+
+    function fetchDatasMarche(){
+      fetch('http://localhost:3333/api/all')
+      .then(response => {
+        return response.json()})
+      .then(datas => {
+        
+        tableMarche.innerHTML = '';
+        /*---add header to table----- */
+        let rowth = document.createElement('tr')
+        let th1 = document.createElement('th')
+        th1.innerText = "Compagnie";
+        rowth.appendChild(th1);
+        let th2 = document.createElement('th')
+        th2.innerText = "Domaine";
+        rowth.appendChild(th2);
+        let th3 = document.createElement('th')
+        th3.innerText = "Price";
+        rowth.appendChild(th3);
+        let th4 = document.createElement('th')
+        th4.innerText = "Fluctuation";
+        rowth.appendChild(th4);
+        tableMarche.appendChild(rowth)
+
+       
+        /*---add data to table----- */
+        datas.forEach(share => {
+          let row = document.createElement('tr')
+          row.id = share._id
+          if(share.changement === "positif"){
+            row.style.backgroundColor = "green";
+          }else if(share.changement === "negatif"){
+            row.style.backgroundColor = "red";
+          }else {
+            row.style.backgroundColor = "transparent";
+          }
+          for(const prop in share){
+            if(prop != "_id"){
+              let cell = document.createElement('td')
+              cell.innerText = share[prop]
+              row.appendChild(cell)
+            }
+          }
+          tableMarche.appendChild(row)
+
+          /* create a link for details of each share and display them in a specific Card */
+          row.addEventListener('click', ()=>{
+            oneTitle.innerHTML = '';
+            console.log(share._id)
+            
+            fetch("http://localhost:3333/api/titre", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({id: share._id})
+              
+            })
+            .then(response => response.json())
+            .then(details => {
+              console.log(details)
+              for(const prop in details ){
+                oneTitle.innerHTML += "<p>"+prop+ " : "+ details[prop] +"</p>"
+              }
+            })
+          })
+          
+          
+        });
+      })
+      .catch(err => {
+        tableMarche.innerHTML = "<tr>Tentative de connection avec l'API...</tr>"
+        console.error(err.message)
+      })
+    }
+    
+    /********************************informations client*****************************************/
+      let list = JSON.parse(('<%- JSON.stringify(listOperations)%>')); //decrypt list of Operations
+      
+     
+      // identify element we needed
+      let selectCompte = document.getElementById('selectCompte');
+      let tableOperation = document.getElementById('tableOperations');
+      let divCanvas = document.getElementById('graph');
+
+    // managment of select option
+      selectCompte.addEventListener('change', ()=>{ // le add event listener rajoute un élément numéroCompte dans la liste et je sais pas pourquoi
+        tableOperation.innerHTML = ''; // empty the table
+        divCanvas.innerHTML = ''; // empty the divCanvas
+        console.log(list)
+        currentList= [];
+        for(i=0; i< list.length; i++){ // create list that contain operation's of selected account
+        
+          if(list[i].compteEmetteur === selectCompte.value){
+              currentList.push(list[i]);
+          }
+        }
+        
+        let rowth = document.createElement('tr');
+        for(const prop in list[0]) { // create the header of the table
+          let th = document.createElement('th');
+          th.innerText = prop
+          rowth.appendChild(th);
+        }
+
+        tableOperation.appendChild(rowth)
+        
+        for(i=0; i < currentList.length; i++){ /// create datas of the tabale with de current List (opreation's of selected count)
+              let row = document.createElement('tr')
+                if(currentList[i].numeroCompte = selectCompte.value)
+                  for(const prop in currentList[i]){
+                      let cell = document.createElement('td')
+                      cell.innerText = currentList[i][prop].toString();
+                      row.appendChild(cell)
+                  }
+              tableOperation.appendChild(row)
+        } 
+
+
+         // create canvas balise for the graphics
+         let acquisitions = document.createElement('canvas');
+        acquisitions.id = 'acquisitions',
+        divCanvas.appendChild(acquisitions);
+
+        // create graphic with CHARTJS  
+        (async function() {
+            new Chart(
+              document.getElementById(`acquisitions`),
+              {
+                type: 'line',
+                data: {
+                  labels: currentList.map(operation => operation.dateOperation),
+                  datasets: [
+                    {
+                        label: 'Solde at the Operation',
+                        data: currentList.map(operation => operation.soldeApres),
+                    }
+                  ]
+                },
+                options: {
+                        scales: {
+                              y: {
+                                type: 'linear',
+                                grace: '100%'
+                              }
+                        }
+                  },
+              }
+            );
+            })();
+            
+          
+        }) 
+        
+        
+
+            
+</script>
+<%- include('../partials/menuClient.ejs') %>
+</body>
+</html>
